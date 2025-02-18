@@ -18,8 +18,8 @@ var Driver = /** @class */ (function () {
             // Clear canvas
             ctx.clearRect(0, 0, innerWidth, innerHeight);
             // Update circle position to mouse position
-            _this.circle.x = _this.mousePosition.x;
-            _this.circle.y = _this.mousePosition.y;
+            _this.circle.position.x = _this.mousePosition.x;
+            _this.circle.position.y = _this.mousePosition.y;
             // Redraw circle
             _this.circle.draw();
         };

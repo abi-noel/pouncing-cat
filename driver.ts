@@ -5,7 +5,7 @@ import { ctx, canvas } from "./canvas.js";
  * Used for position, velocity
  * TODO if necessary move to a vector utils file or something
  */
-interface Vector {
+export interface Vector {
   x: number;
   y: number;
 }
@@ -45,8 +45,8 @@ class Driver {
     ctx!.clearRect(0, 0, innerWidth, innerHeight);
 
     // Update circle position to mouse position
-    this.circle.x = this.mousePosition.x;
-    this.circle.y = this.mousePosition.y;
+    this.circle.position.x = this.mousePosition.x;
+    this.circle.position.y = this.mousePosition.y;
 
     // Redraw circle
     this.circle.draw();
