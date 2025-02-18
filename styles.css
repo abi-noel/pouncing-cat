@@ -1,0 +1,10 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+canvas {
+  background-color: rgb(37, 37, 37);
+}
