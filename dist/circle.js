@@ -1,9 +1,15 @@
 import { ctx } from "./canvas.js";
+export var AnimationType;
+(function (AnimationType) {
+    AnimationType["CHASE"] = "chase";
+    AnimationType["POUNCE"] = "pounce";
+})(AnimationType || (AnimationType = {}));
 /**
  * Placeholder object to be replaced with a cat
  */
 var Circle = /** @class */ (function () {
     function Circle(x, y, dx, dy, radius) {
+        this.currentAnimation = AnimationType.CHASE;
         this.position = { x: x, y: y };
         this.velocity = { x: dx, y: dy };
         this.radius = radius;

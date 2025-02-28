@@ -1,6 +1,11 @@
 import { ctx } from "./canvas.js";
 import { Vector } from "./driver.js";
 
+export enum AnimationType {
+  CHASE = "chase",
+  POUNCE = "pounce",
+}
+
 /**
  * Placeholder object to be replaced with a cat
  */
@@ -8,6 +13,7 @@ export class Circle {
   public position: Vector;
   public velocity: Vector;
   public radius: number;
+  public currentAnimation: AnimationType = AnimationType.CHASE;
 
   constructor(x: number, y: number, dx: number, dy: number, radius: number) {
     this.position = { x: x, y: y };

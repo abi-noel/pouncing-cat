@@ -1,4 +1,4 @@
-import { Circle } from "./circle.js";
+import { AnimationType, Circle } from "./circle.js";
 import { ctx, canvas } from "./canvas.js";
 
 /**
@@ -46,6 +46,22 @@ class Driver {
     // Clear canvas
     ctx!.clearRect(0, 0, innerWidth, innerHeight);
 
+    // Enter the relevant animation
+    switch (this.circle.currentAnimation) {
+      case AnimationType.CHASE:
+        this.chase();
+        break;
+      case AnimationType.POUNCE:
+        console.log("pounce");
+        break;
+      default:
+        throw new Error(
+          `Invalid Animation Type: ${this.circle.currentAnimation} `
+        );
+    }
+  };
+
+  public chase(): void {
     // Get the distance between the mouse and the circle
     const distanceX = this.mousePosition.x - this.circle.position.x;
     const distanceY = this.mousePosition.y - this.circle.position.y;
@@ -56,11 +72,13 @@ class Driver {
       // Scale down the distance vector and add that to the circle's position
       this.circle.position.x += distanceX * 0.012;
       this.circle.position.y += distanceY * 0.012;
+    } else {
+      this.circle.currentAnimation = AnimationType.POUNCE;
     }
 
     // Redraw circle
     this.circle.draw();
-  };
+  }
 
   // Defines an event listener to store the mouses position
   public trackMouse() {

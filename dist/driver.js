@@ -1,4 +1,4 @@
-import { Circle } from "./circle.js";
+import { AnimationType, Circle } from "./circle.js";
 import { ctx, canvas } from "./canvas.js";
 /**
  * Generic placeholder name
@@ -18,18 +18,17 @@ var Driver = /** @class */ (function () {
             requestAnimationFrame(_this.animate);
             // Clear canvas
             ctx.clearRect(0, 0, innerWidth, innerHeight);
-            // Get the distance between the mouse and the circle
-            var distanceX = _this.mousePosition.x - _this.circle.position.x;
-            var distanceY = _this.mousePosition.y - _this.circle.position.y;
-            var distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-            // If the distance is greater than the pounce threshhold
-            if (distance > _this.pounceThreshhold) {
-                // Scale down the distance vector and add that to the circle's position
-                _this.circle.position.x += distanceX * 0.012;
-                _this.circle.position.y += distanceY * 0.012;
+            // Enter the relevant animation
+            switch (_this.circle.currentAnimation) {
+                case AnimationType.CHASE:
+                    _this.chase();
+                    break;
+                case AnimationType.POUNCE:
+                    console.log("pounce");
+                    break;
+                default:
+                    throw new Error("Invalid Animation Type: ".concat(_this.circle.currentAnimation, " "));
             }
-            // Redraw circle
-            _this.circle.draw();
         };
     }
     // Driving logic of the program
@@ -38,6 +37,23 @@ var Driver = /** @class */ (function () {
         this.trackMouse();
         // Start animating
         this.animate();
+    };
+    Driver.prototype.chase = function () {
+        // Get the distance between the mouse and the circle
+        var distanceX = this.mousePosition.x - this.circle.position.x;
+        var distanceY = this.mousePosition.y - this.circle.position.y;
+        var distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+        // If the distance is greater than the pounce threshhold
+        if (distance > this.pounceThreshhold) {
+            // Scale down the distance vector and add that to the circle's position
+            this.circle.position.x += distanceX * 0.012;
+            this.circle.position.y += distanceY * 0.012;
+        }
+        else {
+            this.circle.currentAnimation = AnimationType.POUNCE;
+        }
+        // Redraw circle
+        this.circle.draw();
     };
     // Defines an event listener to store the mouses position
     Driver.prototype.trackMouse = function () {
