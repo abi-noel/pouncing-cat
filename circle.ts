@@ -4,6 +4,7 @@ import { Vector } from "./driver.js";
 export enum AnimationType {
   CHASE = "chase",
   POUNCE = "pounce",
+  SIT = "sit",
 }
 
 /**

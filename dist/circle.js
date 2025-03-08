@@ -3,6 +3,7 @@ export var AnimationType;
 (function (AnimationType) {
     AnimationType["CHASE"] = "chase";
     AnimationType["POUNCE"] = "pounce";
+    AnimationType["SIT"] = "sit";
 })(AnimationType || (AnimationType = {}));
 /**
  * Placeholder object to be replaced with a cat
