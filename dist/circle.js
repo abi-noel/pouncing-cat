@@ -1,6 +1,6 @@
 import { canvas, ctx } from "./canvas.js";
 import { calcDistance, genRandomNumBetween } from "./helpers.js";
-export var AnimationType;
+var AnimationType;
 (function (AnimationType) {
     AnimationType["CHASE"] = "chase";
     AnimationType["POUNCE"] = "pounce";
@@ -10,7 +10,7 @@ export var AnimationType;
  * Placeholder object to be replaced with a cat
  */
 var Circle = /** @class */ (function () {
-    function Circle(x, y, dx, dy, radius) {
+    function Circle(x, y) {
         this.currentAnimation = AnimationType.CHASE;
         /**
          * Pounce animation
@@ -50,15 +50,16 @@ var Circle = /** @class */ (function () {
         this.mousePosition = { x: 0, y: 0 };
         // Counter variable to track the frames passed
         this.frameCount = 0;
+        this.spriteSheet = new Image();
         this.position = { x: x, y: y };
-        this.velocity = { x: dx, y: dy };
-        this.radius = radius;
     }
+    Circle.prototype.init = function () {
+        this.spriteSheet.src = "./Sprite-0001-Recovered.png";
+        // Start mouse position event listener
+        this.trackMouse();
+    };
     Circle.prototype.draw = function () {
-        ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2, false);
-        ctx.fillStyle = "rgb(255, 255, 255)";
-        ctx.fill();
+        ctx === null || ctx === void 0 ? void 0 : ctx.drawImage(this.spriteSheet, 0, 0, 32, 32, this.position.x, this.position.y, 64, 64);
     };
     Circle.prototype.selectAnimation = function () {
         // Up the frame count

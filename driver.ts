@@ -5,18 +5,15 @@ import { ctx, canvas } from "./canvas.js";
  * Generic placeholder name
  */
 class AnimationDriver {
-  public circle = new Circle(
+  public cat = new Circle(
     Math.random() * (canvas!.width - 20 * 2) + 20,
-    Math.random() * (canvas!.height - 20 * 2) + 20,
-    1,
-    Math.PI * 2,
-    20
+    Math.random() * (canvas!.height - 20 * 2) + 20
   );
 
   // Driving logic of the program
   public init(): void {
-    // Start mouse position event listener
-    this.circle.trackMouse(); // change to this.circle.trackMouse()
+    // initialize the cat
+    this.cat.init();
 
     // Start animating
     this.animate();
@@ -33,7 +30,7 @@ class AnimationDriver {
     ctx!.clearRect(0, 0, innerWidth, innerHeight);
 
     // start animating
-    this.circle.selectAnimation();
+    this.cat.selectAnimation();
   };
 }
 

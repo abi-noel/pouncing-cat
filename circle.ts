@@ -13,8 +13,6 @@ enum AnimationType {
  */
 export class Circle {
   public position: Vector;
-  public velocity: Vector;
-  public radius: number;
   public currentAnimation: AnimationType = AnimationType.CHASE;
 
   /**
@@ -70,24 +68,31 @@ export class Circle {
   // Counter variable to track the frames passed
   private frameCount = 0;
 
-  constructor(x: number, y: number, dx: number, dy: number, radius: number) {
+  public spriteSheet: HTMLImageElement = new Image();
+
+  constructor(x: number, y: number) {
     this.position = { x: x, y: y };
-    this.velocity = { x: dx, y: dy };
-    this.radius = radius;
+  }
+
+  public init(): void {
+    this.spriteSheet.src = "./Sprite-0001-Recovered.png";
+
+    // Start mouse position event listener
+    this.trackMouse();
   }
 
   public draw(): void {
-    ctx!.beginPath();
-    ctx!.arc(
+    ctx?.drawImage(
+      this.spriteSheet,
+      0,
+      0,
+      32,
+      32,
       this.position.x,
       this.position.y,
-      this.radius,
-      0,
-      Math.PI * 2,
-      false
+      64,
+      64
     );
-    ctx!.fillStyle = "rgb(255, 255, 255)";
-    ctx!.fill();
   }
 
   public selectAnimation(): void {

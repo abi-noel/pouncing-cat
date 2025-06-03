@@ -3,10 +3,10 @@ import { ctx, canvas } from "./canvas.js";
 /**
  * Generic placeholder name
  */
-var Driver = /** @class */ (function () {
-    function Driver() {
+var AnimationDriver = /** @class */ (function () {
+    function AnimationDriver() {
         var _this = this;
-        this.circle = new Circle(Math.random() * (canvas.width - 20 * 2) + 20, Math.random() * (canvas.height - 20 * 2) + 20, 1, Math.PI * 2, 20);
+        this.cat = new Circle(Math.random() * (canvas.width - 20 * 2) + 20, Math.random() * (canvas.height - 20 * 2) + 20);
         /**
          * Starts animating
          */
@@ -16,18 +16,18 @@ var Driver = /** @class */ (function () {
             // Clear canvas
             ctx.clearRect(0, 0, innerWidth, innerHeight);
             // start animating
-            _this.circle.selectAnimation();
+            _this.cat.selectAnimation();
         };
     }
     // Driving logic of the program
-    Driver.prototype.init = function () {
-        // Start mouse position event listener
-        this.circle.trackMouse(); // change to this.circle.trackMouse()
+    AnimationDriver.prototype.init = function () {
+        // initialize the cat
+        this.cat.init();
         // Start animating
         this.animate();
     };
-    return Driver;
+    return AnimationDriver;
 }());
 // START THAT JANK
-var driver = new Driver();
-driver.init();
+var animationDriver = new AnimationDriver();
+animationDriver.init();
