@@ -1,13 +1,10 @@
 import { Circle } from "./circle.js";
 import { ctx, canvas } from "./canvas.js";
 
-/**
- * Generic placeholder name
- */
 class AnimationDriver {
   public cat = new Circle(
-    Math.random() * (canvas!.width - 20 * 2) + 20,
-    Math.random() * (canvas!.height - 20 * 2) + 20
+    Math.random() * (canvas!.width - 32),
+    Math.random() * (canvas!.height - 32)
   );
 
   // Driving logic of the program

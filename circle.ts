@@ -75,10 +75,14 @@ export class Circle {
   }
 
   public init(): void {
-    this.spriteSheet.src = "./Sprite-0001-Recovered.png";
+    // ensure sprites are loaded before continuing
+    this.spriteSheet.onload = () => {
+      // store the image source
+      this.spriteSheet.src = "./Sprite-0001-Recovered.png";
 
-    // Start mouse position event listener
-    this.trackMouse();
+      // start mouse position event listener
+      this.trackMouse();
+    };
   }
 
   public draw(): void {
