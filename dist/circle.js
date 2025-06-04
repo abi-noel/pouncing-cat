@@ -1,5 +1,5 @@
 import { canvas, ctx } from "./canvas.js";
-import { calcDistance, genRandomNumBetween } from "./helpers.js";
+import { calcDistance, genRandomNumBetween, offsetIterator, } from "./helpers.js";
 var AnimationType;
 (function (AnimationType) {
     AnimationType["CHASE"] = "chase";
@@ -9,8 +9,8 @@ var AnimationType;
 /**
  * Placeholder object to be replaced with a cat
  */
-var Circle = /** @class */ (function () {
-    function Circle(x, y) {
+export class Circle {
+    constructor(x, y) {
         this.currentAnimation = AnimationType.CHASE;
         /**
          * Pounce animation
@@ -36,6 +36,8 @@ var Circle = /** @class */ (function () {
          */
         // The percentage of the distance vector to add to the circle's position when chasing
         this.CHASE_SPEED = 0.01;
+        // The frame that a chase starts on
+        this.chaseAnimationStartedFrame = 0;
         /**
          * Shimmy animation
          */
@@ -51,23 +53,29 @@ var Circle = /** @class */ (function () {
         // Counter variable to track the frames passed
         this.frameCount = 0;
         this.spriteSheet = new Image();
+        this.iterator = offsetIterator();
+        this.offsets = [0, 32, 64, 96, 128, 160, 192, 224];
         this.position = { x: x, y: y };
     }
-    Circle.prototype.init = function () {
+    init() {
+        // ensure sprites are loaded before continuing
+        this.spriteSheet.onload = () => {
+            // start mouse position event listener
+            this.trackMouse();
+        };
+        // store the image source
         this.spriteSheet.src = "./Sprite-0001-Recovered.png";
-        // Start mouse position event listener
-        this.trackMouse();
-    };
-    Circle.prototype.draw = function () {
-        ctx === null || ctx === void 0 ? void 0 : ctx.drawImage(this.spriteSheet, 0, 0, 32, 32, this.position.x, this.position.y, 64, 64);
-    };
-    Circle.prototype.selectAnimation = function () {
+    }
+    draw(xOffset, yOffset) {
+        ctx === null || ctx === void 0 ? void 0 : ctx.drawImage(this.spriteSheet, xOffset, yOffset, 32, 32, this.position.x, this.position.y, 64, 64);
+    }
+    selectAnimation() {
         // Up the frame count
         this.frameCount++;
         // Get the distance between the mouse and the circle
-        var distanceX = this.mousePosition.x - this.position.x;
-        var distanceY = this.mousePosition.y - this.position.y;
-        var distance = calcDistance(distanceX, distanceY);
+        const distanceX = this.mousePosition.x - this.position.x;
+        const distanceY = this.mousePosition.y - this.position.y;
+        const distance = calcDistance(distanceX, distanceY);
         // Start/continue the relevant animation
         switch (this.currentAnimation) {
             case AnimationType.CHASE:
@@ -80,35 +88,73 @@ var Circle = /** @class */ (function () {
                 this.sit(distance);
                 break;
             default:
-                throw new Error("Invalid Animation Type: ".concat(this.currentAnimation));
+                throw new Error(`Invalid Animation Type: ${this.currentAnimation}`);
         }
-    };
+    }
     /**
      * Function to enable/continue chasing animation
      * @param distanceX the x component of the distance
      * @param distanceY the y component of the distance
      * @param distance kinda obvious
      */
-    Circle.prototype.chase = function (distanceX, distanceY, distance) {
+    chase(distanceX, distanceY, distance) {
+        // If the start frame hasn't been initialized
+        //   - set it to the current frame count
+        let offsetIndex;
+        let yOffset;
+        if (this.chaseAnimationStartedFrame === 0) {
+            this.chaseAnimationStartedFrame = this.frameCount;
+            offsetIndex = this.offsets[0];
+        }
+        // Calculate how long we have been in this animation
+        // let framesSinceChaseStart =
+        //   this.frameCount + 1 - this.chaseAnimationStartedFrame;
+        // console.log(framesSinceChaseStart);
+        // if (framesSinceChaseStart % 8 !== 0) {
+        //   offset = this.iterator.next().value;
+        //   console.log(offset);
+        // }
+        offsetIndex = this.iterator.next().value;
+        // console.log(this.offsets[offsetIndex]);
+        if (this.position.x <= this.mousePosition.x && !(distanceY >= distanceX)) {
+            yOffset = 0;
+        }
+        else if (this.position.x >= this.mousePosition.x &&
+            !(distanceY >= distanceX)) {
+            yOffset = 32;
+        }
+        else if (this.position.y >= this.mousePosition.y &&
+            !(distanceX >= distanceY)) {
+            yOffset = 64;
+        }
+        else if (this.position.y <= this.mousePosition.y &&
+            !(distanceX >= distanceY)) {
+            yOffset = 96;
+        }
+        console.log("distanceX: ", distanceX); // distanceX is negative when the cursor is to the left of the cat
+        console.log("distanceY", distanceY); // distanceY is negative when the cursor is above the cat
         // If the distance is greater than the pounce threshold
         if (distance > this.POUNCE_THRESHOLD) {
             // Scale down the distance vector and add that to the circle's position
             this.position.x += distanceX * this.CHASE_SPEED;
             this.position.y += distanceY * this.CHASE_SPEED;
+            // increment
         }
         // or, if the distance is within the pounce threshold
-        else if (distance < this.POUNCE_THRESHOLD) {
+        else if (distance <= this.POUNCE_THRESHOLD) {
             // set the current animation to pounce
             this.currentAnimation = AnimationType.POUNCE;
+            // clear chaseAnimationStarted
+            this.chaseAnimationStartedFrame = 0;
         }
-        // Redraw circle
-        this.draw();
-    };
+        // draw next frame
+        this.draw(this.offsets[offsetIndex], yOffset);
+    }
     /**
      * Function to enable/continue pouncing animation
      * @param distance between the circle and the mouse
      */
-    Circle.prototype.pounce = function (distance) {
+    pounce(distance) {
         // If the start frame hasn't been initialized
         //   - set it to the current frame count
         //   - generate a random shimmy duration for this pounce
@@ -118,7 +164,7 @@ var Circle = /** @class */ (function () {
             this.shimmyDuration = genRandomNumBetween(this.MAX_SHIMMY_DURATION, this.MIN_SHIMMY_DURATION);
         }
         // Calculate how long we have been in this animation
-        var framesSincePounceStart = this.frameCount - this.pounceAnimationStartedFrame;
+        let framesSincePounceStart = this.frameCount - this.pounceAnimationStartedFrame;
         // If we haven't finished the pounce (includes the pounce duration and shimmy duration)
         if (framesSincePounceStart <= this.POUNCE_DURATION + this.shimmyDuration) {
             // If we haven't finished the shimmy
@@ -141,8 +187,8 @@ var Circle = /** @class */ (function () {
                     };
                 }
                 // Scale down the distance vector and add that to the circle's position
-                var dx = this.pounceDestination.x - this.position.x;
-                var dy = this.pounceDestination.y - this.position.y;
+                const dx = this.pounceDestination.x - this.position.x;
+                const dy = this.pounceDestination.y - this.position.y;
                 this.position.x += dx * this.POUNCE_SPEED;
                 this.position.y += dy * this.POUNCE_SPEED;
             }
@@ -162,8 +208,8 @@ var Circle = /** @class */ (function () {
             }
         }
         // Redraw circle
-        this.draw();
-    };
+        this.draw(0, 0);
+    }
     /**
      * Function to start/continue shimmy animation
      *   The shimmy is considered part of the overall pounce animation
@@ -171,7 +217,7 @@ var Circle = /** @class */ (function () {
      * @param distance between the circle and cursor
      * @returns whether to continue the shimmy or not
      */
-    Circle.prototype.tryShimmy = function (distance) {
+    tryShimmy(distance) {
         // If the cursor is out of range (use the buffer to prevent starting and stopping),
         // set the animation to chase and return false to stop the shimmy.
         if (distance > this.POUNCE_THRESHOLD + this.POUNCE_BUFFER) {
@@ -184,14 +230,14 @@ var Circle = /** @class */ (function () {
             return false;
         }
         // If all is well, draw the circle and return true
-        this.draw();
+        this.draw(0, 0);
         return true;
-    };
+    }
     /**
      * Animation that is called when the cursor is too close for a pounce
      * @param distance between the cursor and the cat
      */
-    Circle.prototype.sit = function (distance) {
+    sit(distance) {
         // If the cursor exits the pounce range, start chasing again
         // If the cursor is in between the buffer and the pounce threshold, chase() will
         // just set it back to pounce. This ensures that a pounce can start without
@@ -199,18 +245,15 @@ var Circle = /** @class */ (function () {
         if (distance > this.POUNCE_THRESHOLD - this.POUNCE_BUFFER) {
             this.currentAnimation = AnimationType.CHASE;
         }
-        this.draw();
-    };
+        this.draw(0, 0);
+    }
     /**
      * Defines an event listener to store the mouses position
      */
-    Circle.prototype.trackMouse = function () {
-        var _this = this;
-        canvas.addEventListener("mousemove", function (event) {
-            _this.mousePosition.x = event.clientX;
-            _this.mousePosition.y = event.clientY;
+    trackMouse() {
+        canvas.addEventListener("mousemove", (event) => {
+            this.mousePosition.x = event.clientX;
+            this.mousePosition.y = event.clientY;
         });
-    };
-    return Circle;
-}());
-export { Circle };
+    }
+}

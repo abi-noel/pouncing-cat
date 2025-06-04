@@ -18,3 +18,27 @@ export function genRandomNumBetween(min: number, max: number): number {
 export function calcDistance(distanceX: number, distanceY: number): number {
   return Math.sqrt(distanceX ** 2 + distanceY ** 2);
 }
+
+export function* offsetIterator(): Generator<number> {
+  let count = 0;
+  while (true) {
+    if (count < 7) count++;
+    else count = 0;
+
+    yield count;
+  }
+
+  // this version emits each frame twice to slow down the frame rate
+  // let count = 0;
+  // let i = 0;
+  // while (true) {
+  //   if (count < 7) {
+  //     if (i % 2 === 0) {
+  //       count++;
+  //     }
+  //   } else count = 0;
+
+  //   i++;
+  //   yield count;
+  // }
+}

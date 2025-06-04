@@ -1,6 +1,10 @@
 import { canvas, ctx } from "./canvas.js";
 import { Vector } from "./types.js";
-import { calcDistance, genRandomNumBetween } from "./helpers.js";
+import {
+  calcDistance,
+  genRandomNumBetween,
+  offsetIterator,
+} from "./helpers.js";
 
 enum AnimationType {
   CHASE = "chase",
@@ -48,6 +52,9 @@ export class Circle {
   // The percentage of the distance vector to add to the circle's position when chasing
   private readonly CHASE_SPEED = 0.01;
 
+  // The frame that a chase starts on
+  private chaseAnimationStartedFrame = 0;
+
   /**
    * Shimmy animation
    */
@@ -70,6 +77,10 @@ export class Circle {
 
   public spriteSheet: HTMLImageElement = new Image();
 
+  public readonly iterator = offsetIterator();
+
+  public readonly offsets: number[] = [0, 32, 64, 96, 128, 160, 192, 224];
+
   constructor(x: number, y: number) {
     this.position = { x: x, y: y };
   }
@@ -77,19 +88,18 @@ export class Circle {
   public init(): void {
     // ensure sprites are loaded before continuing
     this.spriteSheet.onload = () => {
-      // store the image source
-      this.spriteSheet.src = "./Sprite-0001-Recovered.png";
-
       // start mouse position event listener
       this.trackMouse();
     };
+    // store the image source
+    this.spriteSheet.src = "./Sprite-0001-Recovered.png";
   }
 
-  public draw(): void {
+  public draw(xOffset: number, yOffset: number): void {
     ctx?.drawImage(
       this.spriteSheet,
-      0,
-      0,
+      xOffset,
+      yOffset,
       32,
       32,
       this.position.x,
@@ -131,20 +141,65 @@ export class Circle {
    * @param distance kinda obvious
    */
   public chase(distanceX: number, distanceY: number, distance: number): void {
+    // If the start frame hasn't been initialized
+    //   - set it to the current frame count
+    let offsetIndex: number;
+    let yOffset: number;
+    if (this.chaseAnimationStartedFrame === 0) {
+      this.chaseAnimationStartedFrame = this.frameCount;
+      offsetIndex = this.offsets[0];
+    }
+    // Calculate how long we have been in this animation
+    // let framesSinceChaseStart =
+    //   this.frameCount + 1 - this.chaseAnimationStartedFrame;
+    // console.log(framesSinceChaseStart);
+
+    // if (framesSinceChaseStart % 8 !== 0) {
+    //   offset = this.iterator.next().value;
+    //   console.log(offset);
+    // }
+    offsetIndex = this.iterator.next().value;
+    // console.log(this.offsets[offsetIndex]);
+    if (this.position.x <= this.mousePosition.x && !(distanceY >= distanceX)) {
+      yOffset = 0;
+    } else if (
+      this.position.x >= this.mousePosition.x &&
+      !(distanceY >= distanceX)
+    ) {
+      yOffset = 32;
+    } else if (
+      this.position.y >= this.mousePosition.y &&
+      !(distanceX >= distanceY)
+    ) {
+      yOffset = 64;
+    } else if (
+      this.position.y <= this.mousePosition.y &&
+      !(distanceX >= distanceY)
+    ) {
+      yOffset = 96;
+    }
+    console.log("distanceX: ", distanceX); // distanceX is negative when the cursor is to the left of the cat
+    console.log("distanceY", distanceY); // distanceY is negative when the cursor is above the cat
+
     // If the distance is greater than the pounce threshold
     if (distance > this.POUNCE_THRESHOLD) {
       // Scale down the distance vector and add that to the circle's position
       this.position.x += distanceX * this.CHASE_SPEED;
       this.position.y += distanceY * this.CHASE_SPEED;
+
+      // increment
     }
     // or, if the distance is within the pounce threshold
-    else if (distance < this.POUNCE_THRESHOLD) {
+    else if (distance <= this.POUNCE_THRESHOLD) {
       // set the current animation to pounce
       this.currentAnimation = AnimationType.POUNCE;
+
+      // clear chaseAnimationStarted
+      this.chaseAnimationStartedFrame = 0;
     }
 
-    // Redraw circle
-    this.draw();
+    // draw next frame
+    this.draw(this.offsets[offsetIndex], yOffset);
   }
 
   /**
@@ -213,7 +268,7 @@ export class Circle {
       }
     }
     // Redraw circle
-    this.draw();
+    this.draw(0, 0);
   }
 
   /**
@@ -236,7 +291,7 @@ export class Circle {
       return false;
     }
     // If all is well, draw the circle and return true
-    this.draw();
+    this.draw(0, 0);
     return true;
   }
 
@@ -252,7 +307,7 @@ export class Circle {
     if (distance > this.POUNCE_THRESHOLD - this.POUNCE_BUFFER) {
       this.currentAnimation = AnimationType.CHASE;
     }
-    this.draw();
+    this.draw(0, 0);
   }
 
   /**
