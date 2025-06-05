@@ -26,6 +26,7 @@ class AnimationDriver {
     // Clear canvas
     ctx!.clearRect(0, 0, innerWidth, innerHeight);
 
+    // this.cat.draw(64, 64);
     // start animating
     this.cat.selectAnimation();
   };

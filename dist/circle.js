@@ -102,6 +102,8 @@ export class Circle {
         //   - set it to the current frame count
         let offsetIndex;
         let yOffset;
+        let absDistanceX = Math.abs(distanceX);
+        let absDistanceY = Math.abs(distanceY);
         if (this.chaseAnimationStartedFrame === 0) {
             this.chaseAnimationStartedFrame = this.frameCount;
             offsetIndex = this.offsets[0];
@@ -116,23 +118,27 @@ export class Circle {
         // }
         offsetIndex = this.iterator.next().value;
         // console.log(this.offsets[offsetIndex]);
-        if (this.position.x <= this.mousePosition.x && !(distanceY >= distanceX)) {
+        if (this.position.x <= this.mousePosition.x &&
+            !(absDistanceY >= absDistanceX)) {
             yOffset = 0;
         }
         else if (this.position.x >= this.mousePosition.x &&
-            !(distanceY >= distanceX)) {
+            !(absDistanceY >= absDistanceX)) {
             yOffset = 32;
         }
         else if (this.position.y >= this.mousePosition.y &&
-            !(distanceX >= distanceY)) {
+            !(absDistanceX >= absDistanceY)) {
             yOffset = 64;
         }
         else if (this.position.y <= this.mousePosition.y &&
-            !(distanceX >= distanceY)) {
+            !(absDistanceX >= absDistanceY)) {
             yOffset = 96;
         }
-        console.log("distanceX: ", distanceX); // distanceX is negative when the cursor is to the left of the cat
-        console.log("distanceY", distanceY); // distanceY is negative when the cursor is above the cat
+        else {
+            yOffset = 0;
+        }
+        console.log("absDistanceX: ", absDistanceX); // distanceX is negative when the cursor is to the left of the cat
+        console.log("absDistanceY", absDistanceY); // distanceY is negative when the cursor is above the cat
         // If the distance is greater than the pounce threshold
         if (distance > this.POUNCE_THRESHOLD) {
             // Scale down the distance vector and add that to the circle's position
