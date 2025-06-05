@@ -144,7 +144,6 @@ export class Circle {
             // Scale down the distance vector and add that to the circle's position
             this.position.x += distanceX * this.CHASE_SPEED;
             this.position.y += distanceY * this.CHASE_SPEED;
-            // increment
         }
         // or, if the distance is within the pounce threshold
         else if (distance <= this.POUNCE_THRESHOLD) {
@@ -197,6 +196,8 @@ export class Circle {
                 const dy = this.pounceDestination.y - this.position.y;
                 this.position.x += dx * this.POUNCE_SPEED;
                 this.position.y += dy * this.POUNCE_SPEED;
+                // Redraw circle
+                this.draw(0, 160);
             }
         }
         // If we have finished the pounce
@@ -213,8 +214,6 @@ export class Circle {
                 this.currentAnimation = AnimationType.SIT;
             }
         }
-        // Redraw circle
-        this.draw(0, 0);
     }
     /**
      * Function to start/continue shimmy animation
@@ -236,7 +235,7 @@ export class Circle {
             return false;
         }
         // If all is well, draw the circle and return true
-        this.draw(0, 0);
+        this.draw(0, 128);
         return true;
     }
     /**
@@ -251,7 +250,7 @@ export class Circle {
         if (distance > this.POUNCE_THRESHOLD - this.POUNCE_BUFFER) {
             this.currentAnimation = AnimationType.CHASE;
         }
-        this.draw(0, 0);
+        this.draw(0, 128);
     }
     /**
      * Defines an event listener to store the mouses position
