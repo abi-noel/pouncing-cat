@@ -55,6 +55,8 @@ export class Circle {
         this.spriteSheet = new Image();
         this.iterator = offsetIterator();
         this.offsets = [0, 32, 64, 96, 128, 160, 192, 224];
+        this.offsetIndex = -1;
+        this.yOffset = -1;
         this.position = { x: x, y: y };
     }
     init() {
@@ -100,45 +102,31 @@ export class Circle {
     chase(distanceX, distanceY, distance) {
         // If the start frame hasn't been initialized
         //   - set it to the current frame count
-        let offsetIndex;
-        let yOffset;
         let absDistanceX = Math.abs(distanceX);
         let absDistanceY = Math.abs(distanceY);
-        if (this.chaseAnimationStartedFrame === 0) {
-            this.chaseAnimationStartedFrame = this.frameCount;
-            offsetIndex = this.offsets[0];
+        if (this.offsetIndex === -1) {
+            this.offsetIndex = this.offsets[0];
         }
-        // Calculate how long we have been in this animation
-        // let framesSinceChaseStart =
-        //   this.frameCount + 1 - this.chaseAnimationStartedFrame;
-        // console.log(framesSinceChaseStart);
-        // if (framesSinceChaseStart % 8 !== 0) {
-        //   offset = this.iterator.next().value;
-        //   console.log(offset);
-        // }
-        offsetIndex = this.iterator.next().value;
-        // console.log(this.offsets[offsetIndex]);
+        this.offsetIndex = this.iterator.next().value;
         if (this.position.x <= this.mousePosition.x &&
             !(absDistanceY >= absDistanceX)) {
-            yOffset = 0;
+            this.yOffset = 0;
         }
         else if (this.position.x >= this.mousePosition.x &&
             !(absDistanceY >= absDistanceX)) {
-            yOffset = 32;
+            this.yOffset = 32;
         }
         else if (this.position.y >= this.mousePosition.y &&
             !(absDistanceX >= absDistanceY)) {
-            yOffset = 64;
+            this.yOffset = 64;
         }
         else if (this.position.y <= this.mousePosition.y &&
             !(absDistanceX >= absDistanceY)) {
-            yOffset = 96;
+            this.yOffset = 96;
         }
         else {
-            yOffset = 0;
+            this.yOffset = 0;
         }
-        console.log("absDistanceX: ", absDistanceX); // distanceX is negative when the cursor is to the left of the cat
-        console.log("absDistanceY", absDistanceY); // distanceY is negative when the cursor is above the cat
         // If the distance is greater than the pounce threshold
         if (distance > this.POUNCE_THRESHOLD) {
             // Scale down the distance vector and add that to the circle's position
@@ -150,10 +138,10 @@ export class Circle {
             // set the current animation to pounce
             this.currentAnimation = AnimationType.POUNCE;
             // clear chaseAnimationStarted
-            this.chaseAnimationStartedFrame = 0;
+            this.offsetIndex = -1;
         }
         // draw next frame
-        this.draw(this.offsets[offsetIndex], yOffset);
+        this.draw(this.offsets[this.offsetIndex], this.yOffset);
     }
     /**
      * Function to enable/continue pouncing animation

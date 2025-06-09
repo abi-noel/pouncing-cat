@@ -17,6 +17,9 @@ export function genRandomNumBetween(min, max) {
 export function calcDistance(distanceX, distanceY) {
     return Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
 }
+/**
+ * TODO
+ */
 export function* offsetIterator() {
     let count = 0;
     while (true) {

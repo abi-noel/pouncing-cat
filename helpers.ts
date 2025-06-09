@@ -19,6 +19,9 @@ export function calcDistance(distanceX: number, distanceY: number): number {
   return Math.sqrt(distanceX ** 2 + distanceY ** 2);
 }
 
+/**
+ * TODO
+ */
 export function* offsetIterator(): Generator<number> {
   let count = 0;
   while (true) {
