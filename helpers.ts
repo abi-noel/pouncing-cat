@@ -30,18 +30,4 @@ export function* offsetIterator(): Generator<number> {
 
     yield count;
   }
-
-  // this version emits each frame twice to slow down the frame rate
-  // let count = 0;
-  // let i = 0;
-  // while (true) {
-  //   if (count < 7) {
-  //     if (i % 2 === 0) {
-  //       count++;
-  //     }
-  //   } else count = 0;
-
-  //   i++;
-  //   yield count;
-  // }
 }

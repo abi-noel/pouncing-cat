@@ -6,6 +6,13 @@ var AnimationType;
     AnimationType["POUNCE"] = "pounce";
     AnimationType["SIT"] = "sit";
 })(AnimationType || (AnimationType = {}));
+var yOffets;
+(function (yOffets) {
+    yOffets[yOffets["RIGHT"] = 0] = "RIGHT";
+    yOffets[yOffets["LEFT"] = 32] = "LEFT";
+    yOffets[yOffets["UP"] = 64] = "UP";
+    yOffets[yOffets["DOWN"] = 96] = "DOWN";
+})(yOffets || (yOffets = {}));
 /**
  * Placeholder object to be replaced with a cat
  */
@@ -108,21 +115,17 @@ export class Circle {
             this.offsetIndex = this.offsets[0];
         }
         this.offsetIndex = this.iterator.next().value;
-        if (this.position.x <= this.mousePosition.x &&
-            !(absDistanceY >= absDistanceX)) {
-            this.yOffset = 0;
+        if (this.shouldMoveRight(absDistanceY, absDistanceX)) {
+            this.yOffset = yOffets.RIGHT;
         }
-        else if (this.position.x >= this.mousePosition.x &&
-            !(absDistanceY >= absDistanceX)) {
-            this.yOffset = 32;
+        else if (this.shouldMoveLeft(absDistanceY, absDistanceX)) {
+            this.yOffset = yOffets.LEFT;
         }
-        else if (this.position.y >= this.mousePosition.y &&
-            !(absDistanceX >= absDistanceY)) {
-            this.yOffset = 64;
+        else if (this.shouldMoveUp(absDistanceX, absDistanceY)) {
+            this.yOffset = yOffets.UP;
         }
-        else if (this.position.y <= this.mousePosition.y &&
-            !(absDistanceX >= absDistanceY)) {
-            this.yOffset = 96;
+        else if (this.shouldMoveDown(absDistanceX, absDistanceY)) {
+            this.yOffset = yOffets.DOWN;
         }
         else {
             this.yOffset = 0;
@@ -142,6 +145,18 @@ export class Circle {
         }
         // draw next frame
         this.draw(this.offsets[this.offsetIndex], this.yOffset);
+    }
+    shouldMoveDown(absDistanceX, absDistanceY) {
+        return (this.position.y <= this.mousePosition.y && !(absDistanceX >= absDistanceY));
+    }
+    shouldMoveUp(absDistanceX, absDistanceY) {
+        return (this.position.y >= this.mousePosition.y && !(absDistanceX >= absDistanceY));
+    }
+    shouldMoveLeft(absDistanceY, absDistanceX) {
+        return (this.position.x >= this.mousePosition.x && !(absDistanceY >= absDistanceX));
+    }
+    shouldMoveRight(absDistanceY, absDistanceX) {
+        return (this.position.x <= this.mousePosition.x && !(absDistanceY >= absDistanceX));
     }
     /**
      * Function to enable/continue pouncing animation

@@ -12,6 +12,13 @@ enum AnimationType {
   SIT = "sit",
 }
 
+enum yOffets {
+  RIGHT = 0,
+  LEFT = 32,
+  UP = 64,
+  DOWN = 96,
+}
+
 /**
  * Placeholder object to be replaced with a cat
  */
@@ -153,26 +160,15 @@ export class Circle {
     }
 
     this.offsetIndex = this.iterator.next().value;
-    if (
-      this.position.x <= this.mousePosition.x &&
-      !(absDistanceY >= absDistanceX)
-    ) {
-      this.yOffset = 0;
-    } else if (
-      this.position.x >= this.mousePosition.x &&
-      !(absDistanceY >= absDistanceX)
-    ) {
-      this.yOffset = 32;
-    } else if (
-      this.position.y >= this.mousePosition.y &&
-      !(absDistanceX >= absDistanceY)
-    ) {
-      this.yOffset = 64;
-    } else if (
-      this.position.y <= this.mousePosition.y &&
-      !(absDistanceX >= absDistanceY)
-    ) {
-      this.yOffset = 96;
+
+    if (this.shouldMoveRight(absDistanceY, absDistanceX)) {
+      this.yOffset = yOffets.RIGHT;
+    } else if (this.shouldMoveLeft(absDistanceY, absDistanceX)) {
+      this.yOffset = yOffets.LEFT;
+    } else if (this.shouldMoveUp(absDistanceX, absDistanceY)) {
+      this.yOffset = yOffets.UP;
+    } else if (this.shouldMoveDown(absDistanceX, absDistanceY)) {
+      this.yOffset = yOffets.DOWN;
     } else {
       this.yOffset = 0;
     }
@@ -194,6 +190,30 @@ export class Circle {
 
     // draw next frame
     this.draw(this.offsets[this.offsetIndex], this.yOffset);
+  }
+
+  private shouldMoveDown(absDistanceX: number, absDistanceY: number) {
+    return (
+      this.position.y <= this.mousePosition.y && !(absDistanceX >= absDistanceY)
+    );
+  }
+
+  shouldMoveUp(absDistanceX: number, absDistanceY: number) {
+    return (
+      this.position.y >= this.mousePosition.y && !(absDistanceX >= absDistanceY)
+    );
+  }
+
+  private shouldMoveLeft(absDistanceY: number, absDistanceX: number) {
+    return (
+      this.position.x >= this.mousePosition.x && !(absDistanceY >= absDistanceX)
+    );
+  }
+
+  private shouldMoveRight(absDistanceY: number, absDistanceX: number) {
+    return (
+      this.position.x <= this.mousePosition.x && !(absDistanceY >= absDistanceX)
+    );
   }
 
   /**
