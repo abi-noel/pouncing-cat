@@ -1,8 +1,8 @@
-import { Circle } from "./circle.js";
+import { Cat } from "./cat.js";
 import { ctx, canvas } from "./canvas.js";
 class AnimationDriver {
     constructor() {
-        this.cat = new Circle(Math.random() * (canvas.width - 32), Math.random() * (canvas.height - 32));
+        this.cat = new Cat(Math.random() * (canvas.width - 32), Math.random() * (canvas.height - 32));
         /**
          * Starts animating
          */

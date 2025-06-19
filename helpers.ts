@@ -22,10 +22,10 @@ export function calcDistance(distanceX: number, distanceY: number): number {
 /**
  * TODO
  */
-export function* offsetIterator(): Generator<number> {
+export function* offsetIterator(spriteCount: number): Generator<number> {
   let count = 0;
   while (true) {
-    if (count < 7) count++;
+    if (count < spriteCount) count++;
     else count = 0;
 
     yield count;

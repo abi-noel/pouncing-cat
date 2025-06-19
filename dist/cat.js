@@ -16,7 +16,8 @@ var yOffets;
 /**
  * Placeholder object to be replaced with a cat
  */
-export class Circle {
+export class Cat {
+    // The cat constructor takes an x and y position coordinate
     constructor(x, y) {
         this.currentAnimation = AnimationType.CHASE;
         /**
@@ -59,10 +60,15 @@ export class Circle {
         this.mousePosition = { x: 0, y: 0 };
         // Counter variable to track the frames passed
         this.frameCount = 0;
+        // Variable to hold the spritesheet image
         this.spriteSheet = new Image();
+        // Iterator for returning the correct sprite offsets
         this.iterator = offsetIterator(7);
+        // Horizontal offset values, there's probably a better way to do this
         this.offsets = [0, 32, 64, 96, 128, 160, 192, 224];
+        // the index of the offsets array
         this.offsetIndex = -1;
+        // the offset in the y direction for the spritesheet
         this.yOffset = -1;
         this.position = { x: x, y: y };
     }
@@ -107,14 +113,16 @@ export class Circle {
      * @param distance kinda obvious
      */
     chase(distanceX, distanceY, distance) {
-        // If the start frame hasn't been initialized
-        //   - set it to the current frame count
+        // get the absolute value of the distances because we only care about raw distance, not direction
         let absDistanceX = Math.abs(distanceX);
         let absDistanceY = Math.abs(distanceY);
+        // If the start frame hasn't been initialized, set it to the current frame count
         if (this.offsetIndex === -1) {
             this.offsetIndex = this.offsets[0];
         }
+        // increment the offset index
         this.offsetIndex = this.iterator.next().value;
+        // Decide which y offset (sprite direction) we should use each frame
         if (this.shouldMoveRight(absDistanceY, absDistanceX)) {
             this.yOffset = yOffets.RIGHT;
         }
@@ -146,15 +154,39 @@ export class Circle {
         // draw next frame
         this.draw(this.offsets[this.offsetIndex], this.yOffset);
     }
+    /**
+     * Helper to determine which direction the sprite should face
+     * @param absDistanceX
+     * @param absDistanceY
+     * @returns a boolean describing whether the sprite should face down
+     */
     shouldMoveDown(absDistanceX, absDistanceY) {
         return (this.position.y <= this.mousePosition.y && !(absDistanceX >= absDistanceY));
     }
+    /**
+     * Helper to determine which direction the sprite should face
+     * @param absDistanceX
+     * @param absDistanceY
+     * @returns a boolean describing whether the sprite should face up
+     */
     shouldMoveUp(absDistanceX, absDistanceY) {
         return (this.position.y >= this.mousePosition.y && !(absDistanceX >= absDistanceY));
     }
+    /**
+     * Helper to determine which direction the sprite should face
+     * @param absDistanceX
+     * @param absDistanceY
+     * @returns a boolean describing whether the sprite should face left
+     */
     shouldMoveLeft(absDistanceY, absDistanceX) {
         return (this.position.x >= this.mousePosition.x && !(absDistanceY >= absDistanceX));
     }
+    /**
+     * Helper to determine which direction the sprite should face
+     * @param absDistanceX
+     * @param absDistanceY
+     * @returns a boolean describing whether the sprite should face right
+     */
     shouldMoveRight(absDistanceY, absDistanceX) {
         return (this.position.x <= this.mousePosition.x && !(absDistanceY >= absDistanceX));
     }

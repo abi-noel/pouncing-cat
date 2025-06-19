@@ -22,7 +22,7 @@ enum yOffets {
 /**
  * Placeholder object to be replaced with a cat
  */
-export class Circle {
+export class Cat {
   public position: Vector;
   public currentAnimation: AnimationType = AnimationType.CHASE;
 
@@ -82,15 +82,22 @@ export class Circle {
   // Counter variable to track the frames passed
   private frameCount = 0;
 
+  // Variable to hold the spritesheet image
   public spriteSheet: HTMLImageElement = new Image();
 
-  public readonly iterator = offsetIterator();
+  // Iterator for returning the correct sprite offsets
+  public readonly iterator = offsetIterator(7);
 
+  // Horizontal offset values, there's probably a better way to do this
   public readonly offsets: number[] = [0, 32, 64, 96, 128, 160, 192, 224];
 
+  // the index of the offsets array
   public offsetIndex: number = -1;
+
+  // the offset in the y direction for the spritesheet
   public yOffset: number = -1;
 
+  // The cat constructor takes an x and y position coordinate
   constructor(x: number, y: number) {
     this.position = { x: x, y: y };
   }
@@ -151,16 +158,19 @@ export class Circle {
    * @param distance kinda obvious
    */
   public chase(distanceX: number, distanceY: number, distance: number): void {
-    // If the start frame hasn't been initialized
-    //   - set it to the current frame count
+    // get the absolute value of the distances because we only care about raw distance, not direction
     let absDistanceX = Math.abs(distanceX);
     let absDistanceY = Math.abs(distanceY);
+
+    // If the start frame hasn't been initialized, set it to the current frame count
     if (this.offsetIndex === -1) {
       this.offsetIndex = this.offsets[0];
     }
 
+    // increment the offset index
     this.offsetIndex = this.iterator.next().value;
 
+    // Decide which y offset (sprite direction) we should use each frame
     if (this.shouldMoveRight(absDistanceY, absDistanceX)) {
       this.yOffset = yOffets.RIGHT;
     } else if (this.shouldMoveLeft(absDistanceY, absDistanceX)) {
@@ -192,24 +202,48 @@ export class Circle {
     this.draw(this.offsets[this.offsetIndex], this.yOffset);
   }
 
+  /**
+   * Helper to determine which direction the sprite should face
+   * @param absDistanceX
+   * @param absDistanceY
+   * @returns a boolean describing whether the sprite should face down
+   */
   private shouldMoveDown(absDistanceX: number, absDistanceY: number) {
     return (
       this.position.y <= this.mousePosition.y && !(absDistanceX >= absDistanceY)
     );
   }
 
+  /**
+   * Helper to determine which direction the sprite should face
+   * @param absDistanceX
+   * @param absDistanceY
+   * @returns a boolean describing whether the sprite should face up
+   */
   shouldMoveUp(absDistanceX: number, absDistanceY: number) {
     return (
       this.position.y >= this.mousePosition.y && !(absDistanceX >= absDistanceY)
     );
   }
 
+  /**
+   * Helper to determine which direction the sprite should face
+   * @param absDistanceX
+   * @param absDistanceY
+   * @returns a boolean describing whether the sprite should face left
+   */
   private shouldMoveLeft(absDistanceY: number, absDistanceX: number) {
     return (
       this.position.x >= this.mousePosition.x && !(absDistanceY >= absDistanceX)
     );
   }
 
+  /**
+   * Helper to determine which direction the sprite should face
+   * @param absDistanceX
+   * @param absDistanceY
+   * @returns a boolean describing whether the sprite should face right
+   */
   private shouldMoveRight(absDistanceY: number, absDistanceX: number) {
     return (
       this.position.x <= this.mousePosition.x && !(absDistanceY >= absDistanceX)

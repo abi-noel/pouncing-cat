@@ -20,10 +20,10 @@ export function calcDistance(distanceX, distanceY) {
 /**
  * TODO
  */
-export function* offsetIterator() {
+export function* offsetIterator(spriteCount) {
     let count = 0;
     while (true) {
-        if (count < 7)
+        if (count < spriteCount)
             count++;
         else
             count = 0;
