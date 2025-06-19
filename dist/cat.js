@@ -70,6 +70,7 @@ export class Cat {
         this.offsetIndex = -1;
         // the offset in the y direction for the spritesheet
         this.yOffset = -1;
+        this.shouldAdvance = false;
         this.position = { x: x, y: y };
     }
     init() {
@@ -84,9 +85,11 @@ export class Cat {
     draw(xOffset, yOffset) {
         ctx === null || ctx === void 0 ? void 0 : ctx.drawImage(this.spriteSheet, xOffset, yOffset, 32, 32, this.position.x, this.position.y, 64, 64);
     }
-    selectAnimation() {
+    selectAnimation(shouldAdvance) {
         // Up the frame count
         this.frameCount++;
+        // Store whether the sprite offset should advance or not
+        this.shouldAdvance = shouldAdvance;
         // Get the distance between the mouse and the circle
         const distanceX = this.mousePosition.x - this.position.x;
         const distanceY = this.mousePosition.y - this.position.y;
@@ -120,8 +123,10 @@ export class Cat {
         if (this.offsetIndex === -1) {
             this.offsetIndex = this.offsets[0];
         }
-        // increment the offset index
-        this.offsetIndex = this.iterator.next().value;
+        if (this.shouldAdvance) {
+            // increment the offset index
+            this.offsetIndex = this.iterator.next().value;
+        }
         // Decide which y offset (sprite direction) we should use each frame
         if (this.shouldMoveRight(absDistanceY, absDistanceX)) {
             this.yOffset = yOffets.RIGHT;
